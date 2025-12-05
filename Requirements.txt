@@ -1,0 +1,18 @@
+Requirements 
+Each team of candidates is required to propose, design, implement and demonstrate a multi-tiered 
+web application based on the Jakarta EE platform and related techniques, with certain creativity, 
+reasonable complexity, and well-designed system architecture. Technically, the system must involve 
+client-side user interfaces (such as web pages, mobile apps, and/or desktop applications), server
+side components, and data storage. 
+Your project should have at least two engineering highlights selected from the list below: 
+n Design of microservices architecture 
+n CI/CD pipeline implementation 
+n Containerization (by utilizing tools such as Docker and Docker Compose) 
+n Design of event-driven mechanisms with message queues 
+n Comprehensive software testing (such as unit testing, mock testing, etc.) 
+n Performance analysis and optimization 
+n API documentation (by utilizing tools such as Swagger and Springdoc OpenAPI) 
+n Observability and monitoring (by utilizing tools such as Spring Boot Actuator and Grafana) 
+In addition, teams are encouraged to explore and use proper AI tools for multiple purposes during 
+the project, such as (but not limited to) software design, implementation, and testing. 
+The assessment will be based on both the presentation and the submission. 
