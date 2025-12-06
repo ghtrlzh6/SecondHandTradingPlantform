@@ -12,11 +12,18 @@ RUN sed -i 's|https://repo.maven.apache.org/maven2|https://maven.aliyun.com/repo
 # 第二阶段：使用Tomcat镜像部署应用
 FROM tomcat:11-jdk21
 
-# 删除默认的ROOT应用
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
+# 安装unzip工具并删除默认的ROOT应用
+RUN apt-get update && apt-get install -y unzip && \
+    rm -rf /usr/local/tomcat/webapps/ROOT
 
-# 从构建阶段复制WAR文件
-COPY --from=builder /usr/src/app/target/*.war /usr/local/tomcat/webapps/ROOT.war
+# 从构建阶段复制WAR文件，命名为demo_war_exploded.war以匹配期望的上下文路径
+COPY --from=builder /usr/src/app/target/*.war /usr/local/tomcat/webapps/demo_war_exploded.war
+
+# 确保MySQL驱动在Tomcat中可用
+COPY --from=builder /usr/src/app/target/demo-1.0-SNAPSHOT.war /tmp/app.war
+RUN unzip /tmp/app.war -d /tmp/app && \
+    cp /tmp/app/WEB-INF/lib/mysql-connector-j-*.jar /usr/local/tomcat/lib/ && \
+    rm -rf /tmp/app.war /tmp/app
 
 # 暴露端口
 EXPOSE 8080

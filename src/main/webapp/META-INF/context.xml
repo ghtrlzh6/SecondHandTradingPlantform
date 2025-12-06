@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- MySQL DataSource Configuration -->
+    <Resource name="jdbc/BookSwapDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="20"
+              maxIdle="10"
+              maxWaitMillis="-1"
+              username="root"
+              password="rootpassword"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://mysql:3306/bookswap?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai"
+              validationQuery="SELECT 1"
+              testWhileIdle="true"
+              testOnBorrow="true"/>
+</Context>
