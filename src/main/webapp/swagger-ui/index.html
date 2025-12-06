@@ -8,14 +8,48 @@
     <link rel="stylesheet" type="text/css" href="custom.css" />
     <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+    <style>
+      .custom-navbar {
+        background-color: #343a40;
+        padding: 10px;
+      }
+      .custom-navbar .navbar-brand {
+        color: white;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+      .custom-navbar .navbar-link {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        background-color: #007bff;
+      }
+      .custom-navbar .navbar-link:hover {
+        background-color: #0056b3;
+      }
+      .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .navbar-links {
+        display: flex;
+        align-items: center;
+      }
+    </style>
   </head>
 
   <body>
-    <!-- 自定义导航栏 -->
+    <!-- 导航栏 -->
     <nav class="custom-navbar">
-      <div class="navbar-brand">校园书友会 API 文档</div>
-      <div class="navbar-links">
-        <a href="../" class="navbar-link">回到首页</a>
+      <div class="navbar-container">
+        <div class="navbar-brand">校园书友会 API 文档</div>
+        <div class="navbar-links">
+          <a href="../index.jsp" class="navbar-link">回到首页</a>
+        </div>
       </div>
     </nav>
     
@@ -25,12 +59,8 @@
     <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
     <script src="./swagger-initializer.js" charset="UTF-8"> </script>
     
-    <!-- 自定义页脚 -->
-    <div class="footer">
-      <div class="wrapper">
-        <p>© 2025 校园书友会. 保留所有权利.</p>
-        <p>API文档版本: 1.0.0</p>
-      </div>
-    </div>
+    <script>
+      // 移除了 custom-layout.js 的引用，改为直接在 HTML 中添加导航栏
+    </script>
   </body>
 </html>
