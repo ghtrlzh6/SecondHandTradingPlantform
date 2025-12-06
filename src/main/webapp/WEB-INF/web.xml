@@ -118,6 +118,46 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>WalletServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.WalletServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>WalletServlet</servlet-name>
+        <url-pattern>/wallet</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BuyBookServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.BuyBookServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>BuyBookServlet</servlet-name>
+        <url-pattern>/buy</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>MessageServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.MessageServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MessageServlet</servlet-name>
+        <url-pattern>/messages</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.OrderServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/orders</url-pattern>
+    </servlet-mapping>
+    
     <!-- Database resource reference -->
     <resource-ref>
         <description>MySQL DataSource</description>

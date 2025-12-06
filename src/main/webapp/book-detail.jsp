@@ -9,6 +9,16 @@
         .book-info { margin-bottom: 20px; }
         .book-image { max-width: 200px; height: auto; }
         .back-link { margin-top: 20px; }
+        .btn { 
+            padding: 10px 15px; 
+            background-color: #008CBA; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .btn:hover { background-color: #007B9A; }
+        .actions { margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -31,6 +41,13 @@
         <img src="${book.imageUrl}" alt="${book.title}" class="book-image">
     </c:if>
     <p><strong>发布时间:</strong> ${book.createdAt}</p>
+</div>
+
+<div class="actions">
+    <form action="buy" method="get">
+        <input type="hidden" name="bookId" value="${book.id}">
+        <button type="submit" class="btn">购买这本书</button>
+    </form>
 </div>
 
 <div class="back-link">

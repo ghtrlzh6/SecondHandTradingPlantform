@@ -69,6 +69,8 @@
 <div class="nav-links">
     <a href="books">浏览书籍</a>
     <a href="addBook">发布书籍</a>
+    <a href="wallet">我的钱包</a>
+    <a href="orders">我的订单</a>
 </div>
 
 <div class="api-doc-link">
