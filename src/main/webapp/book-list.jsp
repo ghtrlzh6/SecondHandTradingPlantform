@@ -32,6 +32,14 @@
     </style>
 </head>
 <body>
+<%
+    // 检查用户是否已登录
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("login");
+        return;
+    }
+%>
+
 <h2>书籍列表</h2>
 
 <div class="search-form">

@@ -1,0 +1,190 @@
+/* 自定义Swagger UI样式 */
+.swagger-ui {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 自定义导航栏 */
+.custom-navbar {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 15px;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.swagger-ui .topbar {
+  background-color: #2c3e50;
+  padding: 10px 0;
+}
+
+.swagger-ui .topbar .download-url-wrapper .download-url-button {
+  background-color: #3498db;
+}
+
+.swagger-ui .info .title {
+  color: #2c3e50;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.swagger-ui .info .description p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+
+.swagger-ui .opblock-tag {
+  background: linear-gradient(to right, #ecf0f1, #ffffff);
+  border-radius: 4px;
+  padding: 10px 20px;
+  margin: 10px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-left: 4px solid #3498db;
+}
+
+.swagger-ui .opblock-tag:hover {
+  background: linear-gradient(to right, #d5dbdb, #f8f9fa);
+  transform: translateX(5px);
+  transition: all 0.3s ease;
+}
+
+.swagger-ui .opblock {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin: 15px 0;
+  border: 1px solid #eee;
+  transition: all 0.3s ease;
+}
+
+.swagger-ui .opblock:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-3px);
+}
+
+.swagger-ui .opblock.opblock-get {
+  border-color: #3498db;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+}
+
+.swagger-ui .opblock.opblock-post {
+  border-color: #2ecc71;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+}
+
+.swagger-ui .opblock.opblock-put {
+  border-color: #f39c12;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border-color: #e74c3c;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+}
+
+.swagger-ui .opblock-summary-method {
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-weight: bold;
+  min-width: 80px;
+  text-align: center;
+}
+
+.swagger-ui .opblock-summary-path {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.swagger-ui .btn.execute {
+  background: linear-gradient(to bottom, #3498db, #2980b9);
+  border-color: #3498db;
+  border-radius: 4px;
+  font-weight: bold;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.swagger-ui .btn.execute:hover {
+  background: linear-gradient(to bottom, #2980b9, #2573a7);
+  border-color: #2980b9;
+  transform: scale(1.05);
+}
+
+.swagger-ui .response-col_status {
+  font-weight: bold;
+}
+
+.swagger-ui .model-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.swagger-ui .scheme-container {
+  background: linear-gradient(to right, #f8f9fa, #ffffff);
+  border-bottom: 1px solid #eee;
+  padding: 20px 0;
+  border-radius: 8px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.swagger-ui .footer {
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 0.9em;
+  background: linear-gradient(to right, #ffffff, #f8f9fa);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .custom-navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .navbar-links {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .swagger-ui .info .title,
+  .swagger-ui .info .description p {
+    text-align: left;
+  }
+}

@@ -1,4 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+    // 检查用户是否已登录
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("welcome.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,10 +45,19 @@
             background-color: #e7f3ff;
             border-left: 6px solid #2196F3;
         }
+        .user-info {
+            float: right;
+            color: #666;
+        }
     </style>
 </head>
 <body>
 <h1>欢迎来到校园二手书交易平台!</h1>
+
+<div class="user-info">
+    当前用户: <%= ((com.example.demo.model.User)session.getAttribute("user")).getUsername() %> | 
+    <a href="logout">退出登录</a>
+</div>
 
 <div class="search-form">
     <form action="search" method="get">
@@ -51,8 +67,6 @@
 </div>
 
 <div class="nav-links">
-    <a href="login">登录</a>
-    <a href="register">注册</a>
     <a href="books">浏览书籍</a>
     <a href="addBook">发布书籍</a>
 </div>
