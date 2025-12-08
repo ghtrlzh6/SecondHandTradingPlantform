@@ -27,6 +27,9 @@ CREATE TABLE IF NOT EXISTS orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     book_id BIGINT NOT NULL,
     buyer_id BIGINT NOT NULL,
+    shipping_address VARCHAR(500),
+    payment_password VARCHAR(100),
+    status VARCHAR(20) DEFAULT 'pending',
     ordered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
     FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE
@@ -61,6 +64,6 @@ INSERT INTO users (username, password, email) VALUES
 ('bob', 'bob123', 'bob@example.com');
 
 INSERT INTO books (title, author, price, description, image_url, seller_id) VALUES 
-('Java核心技术', 'Cay S. Horstmann', 89.00, 'Java经典教材', 'https://example.com/java-core.jpg', 1),
-('Head First设计模式', 'Eric Freeman', 99.00, '设计模式入门经典', 'https://example.com/design-patterns.jpg', 2),
-('算法导论', 'Thomas H. Cormen', 129.00, '算法权威指南', 'https://example.com/intro-algorithms.jpg', 1);
+('Core Java', 'Cay S. Horstmann', 89.00, 'Classic Java Textbook', 'https://example.com/java-core.jpg', 1),
+('Head First Design Patterns', 'Eric Freeman', 99.00, 'Introduction to Design Patterns: A Classic Guide', 'https://example.com/design-patterns.jpg', 2),
+('Introduction to Algorithms', 'Thomas H. Cormen', 129.00, 'Authoritative Guide to Algorithms', 'https://example.com/intro-algorithms.jpg', 1);

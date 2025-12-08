@@ -6,7 +6,6 @@ target/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
-.idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
 *.iws
@@ -37,3 +36,16 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Maven Repository Files ###
+.mvn/repository/
+!.mvn/repository/**/_remote.repositories
+!.mvn/repository/**/resolver-status.properties
+!.mvn/repository/**/*.lastUpdated
+!.mvn/repository/**/*.properties
+
+### IDE Specific Files ###
+.idea/dataSources.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/prettier.xml
+identifier.sqlite

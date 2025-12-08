@@ -16,11 +16,11 @@ FROM tomcat:11-jdk21
 RUN apt-get update && apt-get install -y unzip && \
     rm -rf /usr/local/tomcat/webapps/ROOT
 
-# 从构建阶段复制WAR文件，命名为demo_war_exploded.war以匹配期望的上下文路径
-COPY --from=builder /usr/src/app/target/*.war /usr/local/tomcat/webapps/demo_war_exploded.war
+# 从构建阶段复制WAR文件，命名为ROOT.war以匹配期望的上下文路径
+COPY --from=builder /usr/src/app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
 # 确保MySQL驱动在Tomcat中可用
-COPY --from=builder /usr/src/app/target/demo-1.0-SNAPSHOT.war /tmp/app.war
+COPY --from=builder /usr/src/app/target/ROOT.war /tmp/app.war
 RUN unzip /tmp/app.war -d /tmp/app && \
     cp /tmp/app/WEB-INF/lib/mysql-connector-j-*.jar /usr/local/tomcat/lib/ && \
     rm -rf /tmp/app.war /tmp/app

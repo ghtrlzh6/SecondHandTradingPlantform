@@ -29,6 +29,10 @@ public class BookListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            // 设置响应编码为UTF-8
+            response.setContentType("text/html;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            
             // 获取分页参数
             int page = 1;
             int pageSize = 10;
