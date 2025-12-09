@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
+    rating DECIMAL(3,2) DEFAULT 5.00 COMMENT '用户评分，1.0-5.0',
+    total_ratings INT DEFAULT 0 COMMENT '总评分次数',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,6 +20,7 @@ CREATE TABLE IF NOT EXISTS books (
     description TEXT,
     image_url VARCHAR(500),
     seller_id BIGINT NOT NULL,
+    status VARCHAR(20) DEFAULT 'available' COMMENT '书籍状态：available(可售), sold(已售), reserved(预留)',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -58,10 +61,10 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 -- Insert some sample data for testing
-INSERT INTO users (username, password, email) VALUES 
-('admin', 'admin123', 'admin@example.com'),
-('alice', 'alice123', 'alice@example.com'),
-('bob', 'bob123', 'bob@example.com');
+INSERT INTO users (username, password, email, rating, total_ratings) VALUES 
+('admin', 'admin123', 'admin@example.com', 4.8, 25),
+('alice', 'alice123', 'alice@example.com', 4.5, 12),
+('bob', 'bob123', 'bob@example.com', 4.2, 8);
 
 INSERT INTO books (title, author, price, description, image_url, seller_id) VALUES 
 ('Core Java', 'Cay S. Horstmann', 89.00, 'Classic Java Textbook', 'https://example.com/java-core.jpg', 1),

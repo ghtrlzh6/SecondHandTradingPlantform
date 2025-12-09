@@ -49,3 +49,9 @@ build/
 .idea/inspectionProfiles/Project_Default.xml
 .idea/prettier.xml
 identifier.sqlite
+
+### Test and Debug Files ###
+Cookie
+cookies.txt
+username=*
+*.session

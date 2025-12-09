@@ -85,6 +85,17 @@ public class BookService {
     }
 
     /**
+     * 更新书籍信息
+     *
+     * @param book 书籍对象
+     * @return 影响的行数
+     * @throws SQLException 数据库访问异常
+     */
+    public int updateBook(Book book) throws SQLException {
+        return bookDao.update(book);
+    }
+
+    /**
      * 书籍分页结果包装类
      */
     public static class BookPageResult {

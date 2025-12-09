@@ -2,13 +2,17 @@ package com.example.demo.config;
 
 import com.example.demo.dao.BookDao;
 import com.example.demo.dao.UserDao;
+import com.example.demo.dao.UserStatsDao;
 import com.example.demo.dao.impl.BookDaoImpl;
 import com.example.demo.dao.impl.UserDaoImpl;
+import com.example.demo.dao.impl.UserStatsDaoImpl;
 import com.example.demo.service.BookService;
 import com.example.demo.service.MessageService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.UserService;
+import com.example.demo.service.UserStatsService;
 import com.example.demo.service.WalletService;
+import com.example.demo.service.impl.UserStatsServiceImpl;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -22,6 +26,7 @@ public class ServiceFactory {
     private final WalletService walletService;
     private final MessageService messageService;
     private final OrderService orderService;
+    private final UserStatsService userStatsService;
 
     private ServiceFactory() throws NamingException {
         Context initContext = new InitialContext();
@@ -30,12 +35,14 @@ public class ServiceFactory {
 
         UserDao userDao = new UserDaoImpl(dataSource);
         BookDao bookDao = new BookDaoImpl(dataSource);
+        UserStatsDao userStatsDao = new UserStatsDaoImpl(dataSource, userDao);
 
         this.userService = new UserService(userDao);
         this.bookService = new BookService(bookDao);
         this.walletService = new WalletService(dataSource);
         this.messageService = new MessageService(dataSource);
         this.orderService = new OrderService(dataSource, walletService);
+        this.userStatsService = new UserStatsServiceImpl(userStatsDao, userDao);
     }
 
     public static synchronized ServiceFactory getInstance() throws NamingException {
@@ -63,5 +70,9 @@ public class ServiceFactory {
 
     public OrderService getOrderService() {
         return orderService;
+    }
+
+    public UserStatsService getUserStatsService() {
+        return userStatsService;
     }
 }

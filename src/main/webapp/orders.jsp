@@ -534,10 +534,11 @@
 
                                 <div class="order-content">
                                     <div class="book-info">
-                                        <div class="book-title">书籍信息</div>
+                                        <div class="book-title">${order.bookTitle}</div>
+                                        <div class="book-meta">作者：${order.bookAuthor}</div>
                                         <div class="book-meta">下单时间：${order.orderedAt}</div>
                                     </div>
-                                    <div class="order-price">￥99.00</div>
+                                    <div class="order-price">￥${order.bookPrice}</div>
                                 </div>
 
                                 <div class="order-footer">
@@ -550,9 +551,12 @@
                                             </form>
                                         </c:if>
                                         <c:if test='${order.status == "pending"}'>
-                                            <a href="#" class="btn btn-secondary">💰 立即支付</a>
+                                            <form method="post" action="pay-order" style="display: inline;">
+                                                <input type="hidden" name="orderId" value="${order.id}">
+                                                <button type="submit" class="btn btn-secondary">💰 立即支付</button>
+                                            </form>
                                         </c:if>
-                                        <a href="#" class="btn btn-secondary">📖 查看详情</a>
+                                        <a href="book?id=${order.bookId}" class="btn btn-secondary">📖 查看详情</a>
                                     </div>
                                 </div>
                             </div>

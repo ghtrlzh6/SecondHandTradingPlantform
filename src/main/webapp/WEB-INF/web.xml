@@ -139,6 +139,16 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>CancelBookServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.CancelBookServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>CancelBookServlet</servlet-name>
+        <url-pattern>/cancelBook</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>MessageServlet</servlet-name>
         <servlet-class>com.example.demo.servlet.MessageServlet</servlet-class>
     </servlet>
@@ -156,6 +166,26 @@
     <servlet-mapping>
         <servlet-name>OrderServlet</servlet-name>
         <url-pattern>/orders</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ConfirmDeliveryServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.ConfirmDeliveryServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>ConfirmDeliveryServlet</servlet-name>
+        <url-pattern>/confirm-delivery</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>UserProfileServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.UserProfileServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>UserProfileServlet</servlet-name>
+        <url-pattern>/profile</url-pattern>
     </servlet-mapping>
     
     <!-- Database resource reference -->

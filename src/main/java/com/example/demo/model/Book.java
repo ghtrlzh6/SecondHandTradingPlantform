@@ -11,6 +11,7 @@ public class Book {
     private String description;
     private String imageUrl;
     private Long sellerId;
+    private String status;
     private LocalDateTime createdAt;
 
     public Book() {
@@ -89,5 +90,13 @@ public class Book {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

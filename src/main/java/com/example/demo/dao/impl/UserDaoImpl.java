@@ -16,7 +16,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByUsername(String username) throws SQLException {
-        String sql = "SELECT id, username, password, email, created_at FROM users WHERE username = ?";
+        String sql = "SELECT id, username, password, email, rating, total_ratings, created_at FROM users WHERE username = ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -29,6 +29,8 @@ public class UserDaoImpl implements UserDao {
                     user.setUsername(rs.getString("username"));
                     user.setPassword(rs.getString("password"));
                     user.setEmail(rs.getString("email"));
+                    user.setRating(rs.getBigDecimal("rating"));
+                    user.setTotalRatings(rs.getInt("total_ratings"));
                     user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     return Optional.of(user);
                 }
@@ -39,7 +41,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(Long id) throws SQLException {
-        String sql = "SELECT id, username, password, email, created_at FROM users WHERE id = ?";
+        String sql = "SELECT id, username, password, email, rating, total_ratings, created_at FROM users WHERE id = ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -52,6 +54,8 @@ public class UserDaoImpl implements UserDao {
                     user.setUsername(rs.getString("username"));
                     user.setPassword(rs.getString("password"));
                     user.setEmail(rs.getString("email"));
+                    user.setRating(rs.getBigDecimal("rating"));
+                    user.setTotalRatings(rs.getInt("total_ratings"));
                     user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     return Optional.of(user);
                 }
@@ -103,5 +107,20 @@ public class UserDaoImpl implements UserDao {
             }
         }
         return false;
+    }
+
+    @Override
+    public void updateUserRating(Long userId, double newRating, int totalRatings) throws SQLException {
+        String sql = "UPDATE users SET rating = ?, total_ratings = ? WHERE id = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setDouble(1, newRating);
+            stmt.setInt(2, totalRatings);
+            stmt.setLong(3, userId);
+            
+            stmt.executeUpdate();
+        }
     }
 }

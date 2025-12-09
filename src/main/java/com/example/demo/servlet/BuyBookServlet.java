@@ -97,6 +97,13 @@ public class BuyBookServlet extends HttpServlet {
                 return;
             }
 
+            // 检查用户不能购买自己的书籍
+            if (book.getSellerId().equals(user.getId())) {
+                request.setAttribute("error", "不能购买自己发布的书籍");
+                request.getRequestDispatcher("/buy-book.jsp").forward(request, response);
+                return;
+            }
+
             // 创建订单
             Order order = orderService.createOrder(bookId, user.getId(), shippingAddress, paymentPassword);
             
@@ -105,9 +112,9 @@ public class BuyBookServlet extends HttpServlet {
             
             // 重定向到订单确认页面或其他适当页面
             if (paid) {
-                response.sendRedirect("wallet?message=payment_success");
+                response.sendRedirect("orders?message=payment_success");
             } else {
-                response.sendRedirect("wallet?error=insufficient_balance");
+                response.sendRedirect("orders?error=insufficient_balance");
             }
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid book ID");

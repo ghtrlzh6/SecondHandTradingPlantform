@@ -50,7 +50,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public Optional<Book> findById(Long id) throws SQLException {
-        String sql = "SELECT id, title, author, price, description, image_url, seller_id, created_at FROM books WHERE id = ?";
+        String sql = "SELECT id, title, author, price, description, image_url, seller_id, status, created_at FROM books WHERE id = ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -66,6 +66,7 @@ public class BookDaoImpl implements BookDao {
                     book.setDescription(rs.getString("description"));
                     book.setImageUrl(rs.getString("image_url"));
                     book.setSellerId(rs.getLong("seller_id"));
+                    book.setStatus(rs.getString("status"));
                     book.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     return Optional.of(book);
                 }
@@ -76,7 +77,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public List<Book> findAll(int offset, int limit) throws SQLException {
-        String sql = "SELECT id, title, author, price, description, image_url, seller_id, created_at FROM books ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        String sql = "SELECT id, title, author, price, description, image_url, seller_id, created_at FROM books WHERE status = 'available' ORDER BY created_at DESC LIMIT ? OFFSET ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -106,7 +107,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public List<Book> findByKeyword(String keyword, int offset, int limit) throws SQLException {
         String sql = "SELECT id, title, author, price, description, image_url, seller_id, created_at FROM books " +
-                     "WHERE title LIKE ? OR author LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
+                     "WHERE (title LIKE ? OR author LIKE ?) AND status = 'available' ORDER BY created_at DESC LIMIT ? OFFSET ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -138,7 +139,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public int countAll() throws SQLException {
-        String sql = "SELECT COUNT(*) AS count FROM books";
+        String sql = "SELECT COUNT(*) AS count FROM books WHERE status = 'available'";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -153,7 +154,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public int countByKeyword(String keyword) throws SQLException {
-        String sql = "SELECT COUNT(*) AS count FROM books WHERE title LIKE ? OR author LIKE ?";
+        String sql = "SELECT COUNT(*) AS count FROM books WHERE (title LIKE ? OR author LIKE ?) AND status = 'available'";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -196,6 +197,26 @@ public class BookDaoImpl implements BookDao {
                 }
                 return books;
             }
+        }
+    }
+
+    @Override
+    public int update(Book book) throws SQLException {
+        String sql = "UPDATE books SET title = ?, author = ?, price = ?, description = ?, image_url = ?, seller_id = ?, status = ? WHERE id = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, book.getTitle());
+            stmt.setString(2, book.getAuthor());
+            stmt.setBigDecimal(3, book.getPrice());
+            stmt.setString(4, book.getDescription());
+            stmt.setString(5, book.getImageUrl());
+            stmt.setLong(6, book.getSellerId());
+            stmt.setString(7, book.getStatus());
+            stmt.setLong(8, book.getId());
+            
+            return stmt.executeUpdate();
         }
     }
 }

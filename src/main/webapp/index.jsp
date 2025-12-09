@@ -314,6 +314,7 @@
             <div class="logo">📚 Campus BookSwap</div>
             <div class="user-info">
                 <span>👤 <%= ((com.example.demo.model.User)session.getAttribute("user")).getUsername() %></span>
+                <a href="profile">我的主页</a>
                 <a href="logout">退出登录</a>
             </div>
         </nav>

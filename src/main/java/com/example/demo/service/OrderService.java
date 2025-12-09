@@ -75,8 +75,94 @@ public class OrderService {
                 order.setStatus(Order.STATUS_PAID);
                 orderDao.update(order);
                 
-                // 将款项暂时保存在平台账户中，等待确认收货后再转给卖家
+                // 将款项转给卖家并更新书籍状态为已售出
+                try {
+                    // 获取书籍ID
+                    String getBookIdSql = "SELECT book_id FROM orders WHERE id = ?";
+                    Long bookId = null;
+                    try (java.sql.Connection conn = orderDao.getDataSource().getConnection();
+                         java.sql.PreparedStatement stmt = conn.prepareStatement(getBookIdSql)) {
+                            
+                            stmt.setLong(1, orderId);
+                            try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                                if (rs.next()) {
+                                    bookId = rs.getLong("book_id");
+                                }
+                            }
+                        }
+                    
+                    if (bookId != null) {
+                        String sql = "UPDATE books SET status = 'sold' WHERE id = ? AND seller_id = ?";
+                        try (java.sql.Connection conn = orderDao.getDataSource().getConnection();
+                             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+                                
+                                stmt.setLong(1, bookId);
+                                stmt.setLong(2, sellerId);
+                                stmt.executeUpdate();
+                            }
+                    }
+                } catch (java.sql.SQLException e) {
+                    throw new RuntimeException("更新书籍状态时发生错误", e);
+                }
+                
+                // 将款项转给卖家
+                walletService.deposit(sellerId, bookPrice);
+                
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 标记订单为已发货
+     * @param orderId 订单ID
+     * @return 是否标记成功
+     */
+    public boolean markAsShipped(Long orderId) {
+        Order order = getOrder(orderId);
+        if (order != null && Order.STATUS_PAID.equals(order.getStatus())) {
+            order.setStatus(Order.STATUS_SHIPPED);
+            orderDao.update(order);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 确认收货，将款项转给卖家并标记订单完成
+     * @param orderId 订单ID
+     * @return 是否确认成功
+     */
+    public boolean confirmDelivery(Long orderId) {
+        Order order = getOrder(orderId);
+        if (order != null && Order.STATUS_SHIPPED.equals(order.getStatus())) {
+            // 获取书籍信息以获取价格和卖家ID
+            try {
+                // 这里需要获取BookService，但为了避免循环依赖，我们直接查询数据库
+                String sql = "SELECT b.price, b.seller_id FROM books b JOIN orders o ON b.id = o.book_id WHERE o.id = ?";
+                try (java.sql.Connection conn = orderDao.getDataSource().getConnection();
+                     java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    
+                    stmt.setLong(1, orderId);
+                    try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            BigDecimal bookPrice = rs.getBigDecimal("price");
+                            Long sellerId = rs.getLong("seller_id");
+                            
+                            // 将款项转给卖家
+                            walletService.deposit(sellerId, bookPrice);
+                            
+                            // 更新订单状态为已完成
+                            order.setStatus(Order.STATUS_COMPLETED);
+                            orderDao.update(order);
+                            
+                            return true;
+                        }
+                    }
+                }
+            } catch (java.sql.SQLException e) {
+                throw new RuntimeException("确认收货时发生错误", e);
             }
         }
         return false;
@@ -91,21 +177,6 @@ public class OrderService {
         Order order = getOrder(orderId);
         if (order != null && Order.STATUS_PENDING.equals(order.getStatus())) {
             order.setStatus(Order.STATUS_CANCELLED);
-            orderDao.update(order);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 标记订单为已发货
-     * @param orderId 订单ID
-     * @return 是否标记成功
-     */
-    public boolean markAsShipped(Long orderId) {
-        Order order = getOrder(orderId);
-        if (order != null && Order.STATUS_PAID.equals(order.getStatus())) {
-            order.setStatus(Order.STATUS_SHIPPED);
             orderDao.update(order);
             return true;
         }

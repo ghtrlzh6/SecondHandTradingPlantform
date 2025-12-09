@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class User {
@@ -7,6 +8,8 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private BigDecimal rating;
+    private Integer totalRatings;
     private LocalDateTime createdAt;
 
     public User() {
@@ -58,5 +61,21 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public BigDecimal getRating() {
+        return rating;
+    }
+
+    public void setRating(BigDecimal rating) {
+        this.rating = rating;
+    }
+
+    public Integer getTotalRatings() {
+        return totalRatings;
+    }
+
+    public void setTotalRatings(Integer totalRatings) {
+        this.totalRatings = totalRatings;
     }
 }

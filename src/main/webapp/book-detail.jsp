@@ -380,12 +380,58 @@
 
         <!-- 操作按钮区域 -->
         <section class="actions-section">
-            <form action="buy" method="get" class="buy-form">
-                <input type="hidden" name="bookId" value="${book.id}">
-                <button type="submit" class="btn-buy">
-                    🛒 立即购买
-                </button>
-            </form>
+            <c:choose>
+                <c:when test="${isOwner}">
+                    <!-- 书籍发布者看到的操作 -->
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                            <strong>📚 这是您发布的书籍</strong>
+                        </div>
+                        <div style="background: #ffeaa7; color: #856404; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                            <strong>📊 状态: ${book.status == 'available' ? '可售中' : book.status == 'sold' ? '已售出' : book.status == 'cancelled' ? '已下架' : '未知'}</strong>
+                        </div>
+                        <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 10px;">
+                            <strong>💰 价格: ￥${book.price}</strong>
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                            <c:if test="${book.status == 'available'}">
+                                <form action="cancelBook" method="post" style="display: inline-block;" onsubmit="return confirm('确定要下架这本书吗？下架后将无法恢复。');">
+                                    <input type="hidden" name="bookId" value="${book.id}">
+                                    <button type="submit" style="background: #dc3545; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 5px; cursor: pointer;">
+                                        🚫 取消发布
+                                    </button>
+                                </form>
+                            </c:if>
+                            <c:if test="${book.status == 'cancelled'}">
+                                <div style="background: #6c757d; color: white; padding: 0.8rem 1.5rem; border-radius: 5px; display: inline-block;">
+                                    🚫 已下架
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <!-- 非书籍发布者看到的购买按钮 -->
+                    <c:if test="${book.status == 'available'}">
+                        <form action="buy" method="get" class="buy-form">
+                            <input type="hidden" name="bookId" value="${book.id}">
+                            <button type="submit" class="btn-buy">
+                                🛒 立即购买
+                            </button>
+                        </form>
+                    </c:if>
+                    <c:if test="${book.status != 'available'}">
+                        <div style="text-align: center; padding: 2rem;">
+                            <div style="background: #dc3545; color: white; padding: 1.5rem; border-radius: 10px;">
+                                <strong>🚫 此书已售出</strong>
+                            </div>
+                            <div style="background: #f8d7da; color: #343a40; padding: 1rem; border-radius: 10px;">
+                                <strong>📚 书籍状态: 已售出</strong>
+                            </div>
+                        </div>
+                    </c:if>
+                </c:otherwise>
+            </c:choose>
         </section>
 
         <!-- 导航链接 -->

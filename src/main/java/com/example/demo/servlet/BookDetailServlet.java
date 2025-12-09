@@ -50,8 +50,17 @@ public class BookDetailServlet extends HttpServlet {
                 return;
             }
             
+            // 检查当前用户是否是书籍的发布者
+            Object userObj = request.getSession().getAttribute("user");
+            boolean isOwner = false;
+            if (userObj != null && userObj instanceof com.example.demo.model.User) {
+                com.example.demo.model.User currentUser = (com.example.demo.model.User) userObj;
+                isOwner = currentUser.getId().equals(book.getSellerId());
+            }
+            
             // 设置request属性
             request.setAttribute("book", book);
+            request.setAttribute("isOwner", isOwner);
             
             // 转发到JSP页面
             request.getRequestDispatcher("/book-detail.jsp").forward(request, response);

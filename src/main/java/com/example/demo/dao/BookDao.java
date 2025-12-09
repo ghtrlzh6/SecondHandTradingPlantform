@@ -71,4 +71,13 @@ public interface BookDao {
      * @throws SQLException 数据库访问异常
      */
     List<Book> findBySellerId(Long sellerId) throws SQLException;
+
+    /**
+     * 更新书籍信息
+     *
+     * @param book 书籍对象
+     * @return 影响的行数
+     * @throws SQLException 数据库访问异常
+     */
+    int update(Book book) throws SQLException;
 }

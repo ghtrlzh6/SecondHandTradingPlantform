@@ -17,6 +17,11 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    @Override
     public Order create(Order order) {
         String sql = "INSERT INTO orders (book_id, buyer_id, shipping_address, payment_password, status) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
@@ -48,7 +53,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public Optional<Order> findById(Long id) {
-        String sql = "SELECT id, book_id, buyer_id, shipping_address, payment_password, status, ordered_at FROM orders WHERE id = ?";
+        String sql = "SELECT o.id, o.book_id, o.buyer_id, o.shipping_address, o.payment_password, o.status, o.ordered_at, b.title, b.author, b.price FROM orders o LEFT JOIN books b ON o.book_id = b.id WHERE o.id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -63,6 +68,12 @@ public class OrderDaoImpl implements OrderDao {
                     order.setPaymentPassword(rs.getString("payment_password"));
                     order.setStatus(rs.getString("status"));
                     order.setOrderedAt(rs.getTimestamp("ordered_at").toLocalDateTime());
+                    
+                    // 设置书籍信息
+                    order.setBookTitle(rs.getString("title"));
+                    order.setBookAuthor(rs.getString("author"));
+                    order.setBookPrice(rs.getBigDecimal("price"));
+                    
                     return Optional.of(order);
                 }
             }
@@ -74,7 +85,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public List<Order> findByBuyerId(Long buyerId) {
-        String sql = "SELECT id, book_id, buyer_id, shipping_address, payment_password, status, ordered_at FROM orders WHERE buyer_id = ? ORDER BY ordered_at DESC";
+        String sql = "SELECT o.id, o.book_id, o.buyer_id, o.shipping_address, o.payment_password, o.status, o.ordered_at, b.title, b.author, b.price FROM orders o LEFT JOIN books b ON o.book_id = b.id WHERE o.buyer_id = ? ORDER BY o.ordered_at DESC";
         List<Order> orders = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -90,6 +101,12 @@ public class OrderDaoImpl implements OrderDao {
                     order.setPaymentPassword(rs.getString("payment_password"));
                     order.setStatus(rs.getString("status"));
                     order.setOrderedAt(rs.getTimestamp("ordered_at").toLocalDateTime());
+                    
+                    // 设置书籍信息
+                    order.setBookTitle(rs.getString("title"));
+                    order.setBookAuthor(rs.getString("author"));
+                    order.setBookPrice(rs.getBigDecimal("price"));
+                    
                     orders.add(order);
                 }
             }

@@ -41,4 +41,14 @@ public interface UserDao {
      * @throws SQLException 数据库访问异常
      */
     boolean existsByUsername(String username) throws SQLException;
+
+    /**
+     * 更新用户评分
+     *
+     * @param userId 用户ID
+     * @param newRating 新的评分
+     * @param totalRatings 总评分次数
+     * @throws SQLException 数据库访问异常
+     */
+    void updateUserRating(Long userId, double newRating, int totalRatings) throws SQLException;
 }

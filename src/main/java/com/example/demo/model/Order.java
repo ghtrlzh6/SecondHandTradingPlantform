@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Order {
@@ -10,6 +11,11 @@ public class Order {
     private String paymentPassword;
     private String status; // pending, paid, shipped, completed, cancelled
     private LocalDateTime orderedAt;
+    
+    // 书籍信息字段（用于显示）
+    private String bookTitle;
+    private String bookAuthor;
+    private BigDecimal bookPrice;
 
     public Order() {
         this.status = "pending";
@@ -86,5 +92,29 @@ public class Order {
 
     public void setOrderedAt(LocalDateTime orderedAt) {
         this.orderedAt = orderedAt;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public String getBookAuthor() {
+        return bookAuthor;
+    }
+
+    public void setBookAuthor(String bookAuthor) {
+        this.bookAuthor = bookAuthor;
+    }
+
+    public BigDecimal getBookPrice() {
+        return bookPrice;
+    }
+
+    public void setBookPrice(BigDecimal bookPrice) {
+        this.bookPrice = bookPrice;
     }
 }
