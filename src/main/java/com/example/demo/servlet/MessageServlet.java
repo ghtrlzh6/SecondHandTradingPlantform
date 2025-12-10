@@ -6,6 +6,7 @@ import com.example.demo.model.Message;
 import com.example.demo.model.User;
 import com.example.demo.service.BookService;
 import com.example.demo.service.MessageService;
+import com.example.demo.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 public class MessageServlet extends HttpServlet {
     private MessageService messageService;
     private BookService bookService;
+    private UserService userService;
 
     @Override
     public void init() throws ServletException {
@@ -27,6 +29,7 @@ public class MessageServlet extends HttpServlet {
         try {
             messageService = ServiceFactory.getInstance().getMessageService();
             bookService = ServiceFactory.getInstance().getBookService();
+            userService = ServiceFactory.getInstance().getUserService();
         } catch (NamingException e) {
             throw new ServletException("Failed to initialize service factory", e);
         }

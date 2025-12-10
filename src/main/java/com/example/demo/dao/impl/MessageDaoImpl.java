@@ -2,6 +2,7 @@ package com.example.demo.dao.impl;
 
 import com.example.demo.dao.MessageDao;
 import com.example.demo.model.Message;
+import com.example.demo.model.Conversation;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -13,6 +14,32 @@ public class MessageDaoImpl implements MessageDao {
 
     public MessageDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    @Override
+    public Message findById(Long messageId) {
+        String sql = "SELECT id, sender_id, receiver_id, book_id, content, sent_at, is_read FROM messages WHERE id = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, messageId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Message message = new Message();
+                    message.setId(rs.getLong("id"));
+                    message.setSenderId(rs.getLong("sender_id"));
+                    message.setReceiverId(rs.getLong("receiver_id"));
+                    message.setBookId(rs.getLong("book_id"));
+                    message.setContent(rs.getString("content"));
+                    message.setSentAt(rs.getTimestamp("sent_at").toLocalDateTime());
+                    message.setRead(rs.getBoolean("is_read"));
+                    return message;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("查询消息时发生错误", e);
+        }
+        return null;
     }
 
     @Override
@@ -191,5 +218,101 @@ public class MessageDaoImpl implements MessageDao {
             throw new RuntimeException("查询未读消息时发生错误", e);
         }
         return messages;
+    }
+
+    @Override
+    public List<Conversation> findUserConversations(Long userId) {
+        // 简化的SQL查询，分步骤获取数据
+        String sql = "SELECT " +
+                "m.book_id, " +
+                "b.title as book_title, " +
+                "CASE " +
+                "  WHEN m.sender_id = ? THEN m.receiver_id " +
+                "  ELSE m.sender_id " +
+                "END as other_user_id, " +
+                "CASE " +
+                "  WHEN m.sender_id = ? THEN u_receiver.username " +
+                "  ELSE u_sender.username " +
+                "END as other_username, " +
+                "m.id as last_message_id, " +
+                "m.content as last_message_content, " +
+                "m.sent_at as last_message_time, " +
+                "b.seller_id " +
+                "FROM messages m " +
+                "JOIN books b ON m.book_id = b.id " +
+                "JOIN users u_sender ON m.sender_id = u_sender.id " +
+                "JOIN users u_receiver ON m.receiver_id = u_receiver.id " +
+                "WHERE m.id IN (" +
+                "  SELECT MAX(id) " +
+                "  FROM messages " +
+                "  WHERE sender_id = ? OR receiver_id = ? " +
+                "  GROUP BY book_id, " +
+                "    CASE " +
+                "      WHEN sender_id = ? THEN receiver_id " +
+                "      ELSE sender_id " +
+                "    END" +
+                ") " +
+                "AND (m.sender_id = ? OR m.receiver_id = ?) " +
+                "ORDER BY m.sent_at DESC";
+
+        List<Conversation> conversations = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // 设置参数
+            stmt.setLong(1, userId);
+            stmt.setLong(2, userId);
+            stmt.setLong(3, userId);
+            stmt.setLong(4, userId);
+            stmt.setLong(5, userId);
+            stmt.setLong(6, userId);
+            stmt.setLong(7, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Conversation conversation = new Conversation();
+                    conversation.setBookId(rs.getLong("book_id"));
+                    conversation.setBookTitle(rs.getString("book_title"));
+                    conversation.setOtherUserId(rs.getLong("other_user_id"));
+                    conversation.setOtherUsername(rs.getString("other_username"));
+                    conversation.setLastMessageId(rs.getLong("last_message_id"));
+                    conversation.setLastMessageContent(rs.getString("last_message_content"));
+                    conversation.setLastMessageTime(rs.getTimestamp("last_message_time").toLocalDateTime());
+                    
+                    // 判断对方是否是卖家
+                    Long sellerId = rs.getLong("seller_id");
+                    Long otherUserId = rs.getLong("other_user_id");
+                    conversation.setOtherUserSeller(sellerId.equals(otherUserId));
+                    
+                    // 查询未读消息数量
+                    int unreadCount = getUnreadCountForConversation(conn, userId, conversation.getBookId(), conversation.getOtherUserId());
+                    conversation.setUnreadCount(unreadCount);
+                    
+                    conversations.add(conversation);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("查询用户对话列表时发生错误", e);
+        }
+        return conversations;
+    }
+
+    private int getUnreadCountForConversation(Connection conn, Long userId, Long bookId, Long otherUserId) throws SQLException {
+        String sql = "SELECT COUNT(*) as unread_count " +
+                "FROM messages " +
+                "WHERE receiver_id = ? AND book_id = ? AND sender_id = ? AND is_read = FALSE";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, userId);
+            stmt.setLong(2, bookId);
+            stmt.setLong(3, otherUserId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("unread_count");
+                }
+            }
+        }
+        return 0;
     }
 }

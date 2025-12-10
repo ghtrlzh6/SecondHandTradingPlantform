@@ -179,6 +179,16 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>MessageListServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.MessageListServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MessageListServlet</servlet-name>
+        <url-pattern>/message-list</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>UserProfileServlet</servlet-name>
         <servlet-class>com.example.demo.servlet.UserProfileServlet</servlet-class>
     </servlet>

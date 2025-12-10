@@ -33,13 +33,32 @@ public class UserProfileServlet extends HttpServlet {
             return;
         }
 
-        Long userId = (Long) request.getSession().getAttribute("userId");
+        Long userId;
+        String userIdParam = request.getParameter("userId");
+        
+        // 如果提供了userId参数，则查看指定用户的主页；否则查看自己的主页
+        if (userIdParam != null && !userIdParam.isEmpty()) {
+            try {
+                userId = Long.parseLong(userIdParam);
+            } catch (NumberFormatException e) {
+                response.sendRedirect("books");
+                return;
+            }
+        } else {
+            userId = (Long) request.getSession().getAttribute("userId");
+        }
         
         try {
             Optional<UserStats> userStatsOpt = userStatsService.getUserStats(userId);
             if (userStatsOpt.isPresent()) {
                 UserStats userStats = userStatsOpt.get();
                 request.setAttribute("userStats", userStats);
+                
+                // 设置标识，用于判断是否查看自己的主页
+                com.example.demo.model.User currentUser = (com.example.demo.model.User) request.getSession().getAttribute("user");
+                boolean isOwnProfile = currentUser.getId().equals(userId);
+                request.setAttribute("isOwnProfile", isOwnProfile);
+                
                 request.getRequestDispatcher("/user-profile.jsp").forward(request, response);
             } else {
                 request.setAttribute("errorMessage", "无法获取用户信息");
