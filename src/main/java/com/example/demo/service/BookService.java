@@ -47,6 +47,21 @@ public class BookService {
     }
 
     /**
+     * 获取所有书籍（管理员版本，包含已下架书籍）
+     *
+     * @param page     页码（从1开始）
+     * @param pageSize 每页大小
+     * @return 书籍列表和总数量的包装对象
+     * @throws SQLException 数据库访问异常
+     */
+    public BookPageResult getAllBooksForAdmin(int page, int pageSize) throws SQLException {
+        int offset = (page - 1) * pageSize;
+        List<Book> books = bookDao.findAllIncludingRemoved(offset, pageSize);
+        int totalCount = bookDao.countAllIncludingRemoved();
+        return new BookPageResult(books, totalCount, page, pageSize);
+    }
+
+    /**
      * 根据关键词搜索书籍（分页）
      *
      * @param keyword  关键词

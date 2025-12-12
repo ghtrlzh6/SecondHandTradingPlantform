@@ -219,4 +219,49 @@ public class BookDaoImpl implements BookDao {
             return stmt.executeUpdate();
         }
     }
+
+    @Override
+    public List<Book> findAllIncludingRemoved(int offset, int limit) throws SQLException {
+        String sql = "SELECT id, title, author, price, description, image_url, seller_id, status, created_at FROM books ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Book> books = new ArrayList<>();
+                while (rs.next()) {
+                    Book book = new Book();
+                    book.setId(rs.getLong("id"));
+                    book.setTitle(rs.getString("title"));
+                    book.setAuthor(rs.getString("author"));
+                    book.setPrice(rs.getBigDecimal("price"));
+                    book.setDescription(rs.getString("description"));
+                    book.setImageUrl(rs.getString("image_url"));
+                    book.setSellerId(rs.getLong("seller_id"));
+                    book.setStatus(rs.getString("status"));
+                    book.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    books.add(book);
+                }
+                return books;
+            }
+        }
+    }
+
+    @Override
+    public int countAllIncludingRemoved() throws SQLException {
+        String sql = "SELECT COUNT(*) AS count FROM books";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+            return 0;
+        }
+    }
 }

@@ -131,6 +131,37 @@
             font-size: 0.9rem;
         }
 
+        /* 订单类型切换标签 */
+        .order-type-tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        .order-type-tab {
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+        }
+
+        .order-type-tab:hover {
+            background: #e9ecef;
+            color: #4CAF50;
+            transform: translateY(-2px);
+        }
+
+        .order-type-tab.active {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
         /* 订单列表容器 */
         .orders-container {
             background: white;
@@ -466,26 +497,38 @@
             <h2>📋 我的订单</h2>
         </section>
 
+        <!-- 订单类型切换 -->
+        <div class="orders-container" style="margin-bottom: 1.5rem;">
+            <div class="order-type-tabs">
+                <a href="orders?type=buy" class="order-type-tab ${orderType == 'buy' ? 'active' : ''}">
+                    🛒 购买订单
+                </a>
+                <a href="orders?type=sell" class="order-type-tab ${orderType == 'sell' ? 'active' : ''}">
+                    💰 出售订单
+                </a>
+            </div>
+        </div>
+
         <!-- 订单统计 -->
         <div class="stats-container">
             <div class="stat-card">
                 <div class="stat-icon">⏳</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number">${statusCounts.pending}</div>
                 <div class="stat-label">待支付</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📦</div>
-                <div class="stat-number">0</div>
-                <div class="stat-label">待发货</div>
+                <div class="stat-number">${statusCounts.paid}</div>
+                <div class="stat-label">${orderType == 'sell' ? '待发货' : '已支付'}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🚚</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number">${statusCounts.shipped}</div>
                 <div class="stat-label">待收货</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">✅</div>
-                <div class="stat-number">0</div>
+                <div class="stat-number">${statusCounts.completed}</div>
                 <div class="stat-label">已完成</div>
             </div>
         </div>
@@ -544,18 +587,38 @@
                                 <div class="order-footer">
                                     <div class="order-date">${order.orderedAt}</div>
                                     <div class="order-actions">
-                                        <c:if test='${order.status == "shipped"}'>
-                                            <form method="post" action="confirm-delivery" style="display: inline;">
-                                                <input type="hidden" name="orderId" value="${order.id}">
-                                                <button type="submit" class="btn btn-primary">✅ 确认收货</button>
-                                            </form>
+                                        <!-- 卖家视图 -->
+                                        <c:if test="${isSellerView}">
+                                            <c:if test='${order.status == "paid"}'>
+                                                <form method="post" action="ship-order" style="display: inline;" onsubmit="return confirm('确认要发货吗？')">
+                                                    <input type="hidden" name="orderId" value="${order.id}">
+                                                    <button type="submit" class="btn btn-primary">📦 发货</button>
+                                                </form>
+                                            </c:if>
                                         </c:if>
-                                        <c:if test='${order.status == "pending"}'>
-                                            <form method="post" action="pay-order" style="display: inline;">
-                                                <input type="hidden" name="orderId" value="${order.id}">
-                                                <button type="submit" class="btn btn-secondary">💰 立即支付</button>
-                                            </form>
+                                        
+                                        <!-- 买家视图 -->
+                                        <c:if test="${!isSellerView}">
+                                            <c:if test='${order.status == "shipped"}'>
+                                                <form method="post" action="confirm-delivery" style="display: inline;" onsubmit="return confirm('确认已收到货吗？确认后款项将转给卖家')">
+                                                    <input type="hidden" name="orderId" value="${order.id}">
+                                                    <button type="submit" class="btn btn-primary">✅ 确认收货</button>
+                                                </form>
+                                            </c:if>
+                                            <c:if test='${order.status == "pending"}'>
+                                                <form method="post" action="pay-order" style="display: inline;">
+                                                    <input type="hidden" name="orderId" value="${order.id}">
+                                                    <button type="submit" class="btn btn-secondary">💰 立即支付</button>
+                                                </form>
+                                            </c:if>
+                                            <!-- 申诉按钮 - 仅对已完成订单显示 -->
+                                            <c:if test='${order.status == "completed"}'>
+                                                <button onclick="openAppealModal(${order.id})" class="btn btn-secondary" style="background: #ff9800; border-color: #ff9800;">
+                                                    📝 订单申诉
+                                                </button>
+                                            </c:if>
                                         </c:if>
+                                        
                                         <a href="book?id=${order.bookId}" class="btn btn-secondary">📖 查看详情</a>
                                     </div>
                                 </div>
@@ -571,6 +634,36 @@
             <a href="index.jsp">🏠 返回首页</a>
         </div>
     </main>
+
+    <!-- 申诉模态框 -->
+    <div id="appealModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 订单申诉</h3>
+                <button class="close-btn" onclick="closeAppealModal()">&times;</button>
+            </div>
+            <div class="appeal-info">
+                <strong>⚠️ 申诉说明：</strong>
+                <ul style="margin: 10px 0; padding-left: 20px; color: #666;">
+                    <li>申诉功能仅用于处理已完成订单的争议</li>
+                    <li>请详细描述您遇到的问题</li>
+                    <li>管理员会在24小时内回复您的申诉</li>
+                    <li>申诉内容将发送给平台管理员处理</li>
+                </ul>
+            </div>
+            <form id="appealForm" method="get" action="appeal" style="display: none;">
+                <input type="hidden" name="orderId" id="appealOrderId">
+            </form>
+            <div class="appeal-actions">
+                <button onclick="submitAppeal()" class="btn btn-primary" style="background: #ff9800; border-color: #ff9800;">
+                    我已了解，开始申诉
+                </button>
+                <button onclick="closeAppealModal()" class="btn btn-secondary">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // 筛选订单
@@ -593,6 +686,136 @@
                 }
             });
         }
+
+        // 打开申诉模态框
+        function openAppealModal(orderId) {
+            document.getElementById('appealOrderId').value = orderId;
+            document.getElementById('appealModal').style.display = 'block';
+        }
+
+        // 关闭申诉模态框
+        function closeAppealModal() {
+            document.getElementById('appealModal').style.display = 'none';
+        }
+
+        // 提交申诉
+        function submitAppeal() {
+            const form = document.getElementById('appealForm');
+            form.submit();
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('appealModal');
+            if (event.target === modal) {
+                closeAppealModal();
+            }
+        }
     </script>
+
+    <style>
+        /* 申诉模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .appeal-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .appeal-info strong {
+            color: #856404;
+        }
+
+        .appeal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 5% auto;
+                padding: 1.5rem;
+                width: 95%;
+            }
+
+            .appeal-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .appeal-actions button {
+                width: 100%;
+            }
+        }
+    </style>
 </body>
 </html>

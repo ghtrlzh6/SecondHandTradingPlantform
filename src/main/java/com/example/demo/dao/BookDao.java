@@ -80,4 +80,22 @@ public interface BookDao {
      * @throws SQLException 数据库访问异常
      */
     int update(Book book) throws SQLException;
+
+    /**
+     * 获取所有书籍（管理员版本，包含已下架书籍）
+     *
+     * @param offset 偏移量
+     * @param limit  限制数量
+     * @return 书籍列表
+     * @throws SQLException 数据库访问异常
+     */
+    List<Book> findAllIncludingRemoved(int offset, int limit) throws SQLException;
+
+    /**
+     * 计算所有书籍总数（管理员版本，包含已下架书籍）
+     *
+     * @return 总数
+     * @throws SQLException 数据库访问异常
+     */
+    int countAllIncludingRemoved() throws SQLException;
 }

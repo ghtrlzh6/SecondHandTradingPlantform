@@ -69,4 +69,15 @@ public class UserService {
         Optional<User> userOpt = userDao.findById(id);
         return userOpt.orElse(null);
     }
+
+    /**
+     * 获取管理员用户
+     *
+     * @return 管理员用户对象，如果没有管理员则返回null
+     * @throws SQLException 数据库访问异常
+     */
+    public User findAdmin() throws SQLException {
+        Optional<User> adminOpt = userDao.findAdmin();
+        return adminOpt.orElse(null);
+    }
 }

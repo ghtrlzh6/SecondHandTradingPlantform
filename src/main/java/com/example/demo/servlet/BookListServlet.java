@@ -2,6 +2,7 @@ package com.example.demo.servlet;
 
 import com.example.demo.config.ServiceFactory;
 import com.example.demo.model.Book;
+import com.example.demo.model.User;
 import com.example.demo.service.BookService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -47,8 +48,14 @@ public class BookListServlet extends HttpServlet {
                 page = 1;
             }
             
-            // 获取书籍列表
-            BookService.BookPageResult result = bookService.getAllBooks(page, pageSize);
+            // 检查用户是否为管理员
+            User user = (User) request.getSession().getAttribute("user");
+            boolean isAdmin = user != null && user.isAdmin();
+            
+            // 获取书籍列表（管理员可以看到所有书籍，包括已下架的）
+            BookService.BookPageResult result = isAdmin ? 
+                bookService.getAllBooksForAdmin(page, pageSize) : 
+                bookService.getAllBooks(page, pageSize);
             
             // 设置request属性
             request.setAttribute("books", result.getBooks());

@@ -314,6 +314,9 @@
             <div class="logo">📚 Campus BookSwap</div>
             <div class="user-info">
                 <span>👤 <%= ((com.example.demo.model.User)session.getAttribute("user")).getUsername() %></span>
+                <% if (((com.example.demo.model.User)session.getAttribute("user")).isAdmin()) { %>
+                    <span style="color: #f44336; font-weight: bold; background: rgba(244, 67, 54, 0.1); padding: 0.3rem 0.8rem; border-radius: 15px;">🔧 管理员</span>
+                <% } %>
                 <a href="profile">我的主页</a>
                 <a href="logout">退出登录</a>
             </div>
@@ -359,7 +362,7 @@
             <a href="orders" class="feature-card">
                 <div class="feature-icon">📋</div>
                 <h3>我的订单</h3>
-                <p>查看交易记录，跟踪订单状态</p>
+                <p>查看购买和出售记录，管理订单状态</p>
             </a>
         </section>
 

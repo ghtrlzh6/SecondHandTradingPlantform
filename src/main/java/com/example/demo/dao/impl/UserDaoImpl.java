@@ -16,7 +16,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByUsername(String username) throws SQLException {
-        String sql = "SELECT id, username, password, email, rating, total_ratings, created_at FROM users WHERE username = ?";
+        String sql = "SELECT id, username, password, email, rating, total_ratings, role, created_at FROM users WHERE username = ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -31,6 +31,7 @@ public class UserDaoImpl implements UserDao {
                     user.setEmail(rs.getString("email"));
                     user.setRating(rs.getBigDecimal("rating"));
                     user.setTotalRatings(rs.getInt("total_ratings"));
+                    user.setRole(rs.getString("role"));
                     user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     return Optional.of(user);
                 }
@@ -41,7 +42,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(Long id) throws SQLException {
-        String sql = "SELECT id, username, password, email, rating, total_ratings, created_at FROM users WHERE id = ?";
+        String sql = "SELECT id, username, password, email, rating, total_ratings, role, created_at FROM users WHERE id = ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -56,6 +57,7 @@ public class UserDaoImpl implements UserDao {
                     user.setEmail(rs.getString("email"));
                     user.setRating(rs.getBigDecimal("rating"));
                     user.setTotalRatings(rs.getInt("total_ratings"));
+                    user.setRole(rs.getString("role"));
                     user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     return Optional.of(user);
                 }
@@ -122,5 +124,29 @@ public class UserDaoImpl implements UserDao {
             
             stmt.executeUpdate();
         }
+    }
+
+    @Override
+    public Optional<User> findAdmin() throws SQLException {
+        String sql = "SELECT id, username, password, email, rating, total_ratings, role, created_at FROM users WHERE role = 'admin' LIMIT 1";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getLong("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setEmail(rs.getString("email"));
+                user.setRating(rs.getBigDecimal("rating"));
+                user.setTotalRatings(rs.getInt("total_ratings"));
+                user.setRole(rs.getString("role"));
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
     }
 }

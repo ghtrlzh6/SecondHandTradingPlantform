@@ -9,6 +9,7 @@ public interface OrderDao {
     Order create(Order order);
     Optional<Order> findById(Long id);
     List<Order> findByBuyerId(Long buyerId);
+    List<Order> findBySellerId(Long sellerId);
     List<Order> findByBookId(Long bookId);
     List<Order> findAll();
     Order update(Order order);

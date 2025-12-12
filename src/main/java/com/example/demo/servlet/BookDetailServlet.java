@@ -2,7 +2,9 @@ package com.example.demo.servlet;
 
 import com.example.demo.config.ServiceFactory;
 import com.example.demo.model.Book;
+import com.example.demo.model.User;
 import com.example.demo.service.BookService;
+import com.example.demo.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,12 +16,14 @@ import java.sql.SQLException;
 
 public class BookDetailServlet extends HttpServlet {
     private BookService bookService;
+    private UserService userService;
 
     @Override
     public void init() throws ServletException {
         super.init();
         try {
             bookService = ServiceFactory.getInstance().getBookService();
+            userService = ServiceFactory.getInstance().getUserService();
         } catch (NamingException e) {
             throw new ServletException("Failed to initialize service factory", e);
         }
@@ -50,6 +54,9 @@ public class BookDetailServlet extends HttpServlet {
                 return;
             }
             
+            // 获取卖家信息
+            User seller = userService.findById(book.getSellerId());
+            
             // 检查当前用户是否是书籍的发布者
             Object userObj = request.getSession().getAttribute("user");
             boolean isOwner = false;
@@ -60,6 +67,7 @@ public class BookDetailServlet extends HttpServlet {
             
             // 设置request属性
             request.setAttribute("book", book);
+            request.setAttribute("seller", seller);
             request.setAttribute("isOwner", isOwner);
             
             // 转发到JSP页面

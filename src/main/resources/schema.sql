@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL,
     rating DECIMAL(3,2) DEFAULT 5.00 COMMENT '用户评分，1.0-5.0',
     total_ratings INT DEFAULT 0 COMMENT '总评分次数',
+    role VARCHAR(20) DEFAULT 'user' COMMENT '用户角色：user(普通用户), admin(管理员)',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -51,20 +52,20 @@ CREATE TABLE IF NOT EXISTS messages (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     sender_id BIGINT NOT NULL,
     receiver_id BIGINT NOT NULL,
-    book_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL COMMENT '书籍ID，负数表示申诉消息（绝对值为订单ID）',
     content TEXT NOT NULL,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_read BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+    -- 移除book_id的外键约束以支持申诉消息（负数book_id）
 );
 
 -- Insert some sample data for testing
-INSERT INTO users (username, password, email, rating, total_ratings) VALUES 
-('admin', 'admin123', 'admin@example.com', 4.8, 25),
-('alice', 'alice123', 'alice@example.com', 4.5, 12),
-('bob', 'bob123', 'bob@example.com', 4.2, 8);
+INSERT INTO users (username, password, email, rating, total_ratings, role) VALUES 
+('admin', 'admin123', 'admin@example.com', 4.8, 25, 'admin'),
+('alice', 'alice123', 'alice@example.com', 4.5, 12, 'user'),
+('bob', 'bob123', 'bob@example.com', 4.2, 8, 'user');
 
 INSERT INTO books (title, author, price, description, image_url, seller_id) VALUES 
 ('Core Java', 'Cay S. Horstmann', 89.00, 'Classic Java Textbook', 'https://example.com/java-core.jpg', 1),

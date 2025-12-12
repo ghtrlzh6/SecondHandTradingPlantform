@@ -10,6 +10,7 @@ public class User {
     private String email;
     private BigDecimal rating;
     private Integer totalRatings;
+    private String role;
     private LocalDateTime createdAt;
 
     public User() {
@@ -77,5 +78,21 @@ public class User {
 
     public void setTotalRatings(Integer totalRatings) {
         this.totalRatings = totalRatings;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
+     * 检查用户是否为管理员
+     * @return true如果是管理员，false否则
+     */
+    public boolean isAdmin() {
+        return "admin".equals(role);
     }
 }

@@ -211,6 +211,36 @@
             box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
         }
 
+        .book-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .book-action-remove {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .book-action-remove:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .book-status {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
         /* 分页 */
         .pagination {
             background: white;
@@ -370,7 +400,16 @@
                     <div class="book-author">作者：${book.author}</div>
                     <div class="book-price">￥${book.price}</div>
                     <div class="book-date">发布时间：${book.createdAt}</div>
-                    <a href="book?id=${book.id}" class="book-action">查看详情</a>
+                    <div class="book-status">状态：${book.status == 'available' ? '可售' : book.status == 'sold' ? '已售' : book.status == 'reserved' ? '预留' : book.status == 'removed' ? '已下架' : book.status}</div>
+                    <div class="book-actions">
+                        <a href="book?id=${book.id}" class="book-action">查看详情</a>
+                        <c:if test="${sessionScope.user.isAdmin() and book.status == 'available'}">
+                            <form action="admin/removeBook" method="post" style="display: inline;" onsubmit="return confirm('确定要下架这本书吗？')">
+                                <input type="hidden" name="bookId" value="${book.id}">
+                                <button type="submit" class="book-action-remove">下架书籍</button>
+                            </form>
+                        </c:if>
+                    </div>
                 </div>
             </c:forEach>
         </section>

@@ -45,12 +45,47 @@ public class OrderService {
     }
 
     /**
-     * 获取用户的所有订单
+     * 获取用户作为买家的所有订单
      * @param buyerId 买家ID
      * @return 订单列表
      */
     public List<Order> getUserOrders(Long buyerId) {
         return orderDao.findByBuyerId(buyerId);
+    }
+
+    /**
+     * 获取用户作为卖家的所有订单
+     * @param sellerId 卖家ID
+     * @return 订单列表
+     */
+    public List<Order> getSellerOrders(Long sellerId) {
+        return orderDao.findBySellerId(sellerId);
+    }
+
+    /**
+     * 验证用户是否是订单的卖家
+     * @param orderId 订单ID
+     * @param userId 用户ID
+     * @return 是否是卖家
+     */
+    public boolean validateOrderOwnership(Long orderId, Long userId) {
+        try {
+            String sql = "SELECT b.seller_id FROM books b JOIN orders o ON b.id = o.book_id WHERE o.id = ?";
+            try (java.sql.Connection conn = orderDao.getDataSource().getConnection();
+                 java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setLong(1, orderId);
+                try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        Long sellerId = rs.getLong("seller_id");
+                        return sellerId.equals(userId);
+                    }
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            throw new RuntimeException("验证订单所有权时发生错误", e);
+        }
+        return false;
     }
 
     /**
@@ -67,7 +102,7 @@ public class OrderService {
             return false;
         }
 
-        // 执行支付
+        // 执行支付 - 暂存款项，不直接转给卖家
         if (walletService.pay(buyerId, bookPrice)) {
             // 更新订单状态为已支付
             Order order = getOrder(orderId);
@@ -75,7 +110,7 @@ public class OrderService {
                 order.setStatus(Order.STATUS_PAID);
                 orderDao.update(order);
                 
-                // 将款项转给卖家并更新书籍状态为已售出
+                // 更新书籍状态为已售出
                 try {
                     // 获取书籍ID
                     String getBookIdSql = "SELECT book_id FROM orders WHERE id = ?";
@@ -105,8 +140,7 @@ public class OrderService {
                     throw new RuntimeException("更新书籍状态时发生错误", e);
                 }
                 
-                // 将款项转给卖家
-                walletService.deposit(sellerId, bookPrice);
+                // 注意：这里不再直接将款项转给卖家，等买家确认收货后再转账
                 
                 return true;
             }

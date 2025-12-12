@@ -56,7 +56,7 @@ public class OrderDaoImpl implements OrderDao {
         String sql = "SELECT o.id, o.book_id, o.buyer_id, o.shipping_address, o.payment_password, o.status, o.ordered_at, b.title, b.author, b.price FROM orders o LEFT JOIN books b ON o.book_id = b.id WHERE o.id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -112,6 +112,39 @@ public class OrderDaoImpl implements OrderDao {
             }
         } catch (SQLException e) {
             throw new RuntimeException("查询用户订单时发生错误", e);
+        }
+        return orders;
+    }
+
+    @Override
+    public List<Order> findBySellerId(Long sellerId) {
+        String sql = "SELECT o.id, o.book_id, o.buyer_id, o.shipping_address, o.payment_password, o.status, o.ordered_at, b.title, b.author, b.price FROM orders o LEFT JOIN books b ON o.book_id = b.id WHERE b.seller_id = ? ORDER BY o.ordered_at DESC";
+        List<Order> orders = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setLong(1, sellerId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Order order = new Order();
+                    order.setId(rs.getLong("id"));
+                    order.setBookId(rs.getLong("book_id"));
+                    order.setBuyerId(rs.getLong("buyer_id"));
+                    order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setPaymentPassword(rs.getString("payment_password"));
+                    order.setStatus(rs.getString("status"));
+                    order.setOrderedAt(rs.getTimestamp("ordered_at").toLocalDateTime());
+                    
+                    // 设置书籍信息
+                    order.setBookTitle(rs.getString("title"));
+                    order.setBookAuthor(rs.getString("author"));
+                    order.setBookPrice(rs.getBigDecimal("price"));
+                    
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding orders by seller ID", e);
         }
         return orders;
     }

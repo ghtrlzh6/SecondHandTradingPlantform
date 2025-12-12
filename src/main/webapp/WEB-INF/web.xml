@@ -159,12 +159,12 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>OrderServlet</servlet-name>
-        <servlet-class>com.example.demo.servlet.OrderServlet</servlet-class>
+        <servlet-name>OrderListServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.OrderListServlet</servlet-class>
     </servlet>
     
     <servlet-mapping>
-        <servlet-name>OrderServlet</servlet-name>
+        <servlet-name>OrderListServlet</servlet-name>
         <url-pattern>/orders</url-pattern>
     </servlet-mapping>
     
@@ -179,6 +179,16 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>MessageListServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.MessageListServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MessageListServlet</servlet-name>
+        <url-pattern>/message-list</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>UserProfileServlet</servlet-name>
         <servlet-class>com.example.demo.servlet.UserProfileServlet</servlet-class>
     </servlet>
@@ -186,6 +196,56 @@
     <servlet-mapping>
         <servlet-name>UserProfileServlet</servlet-name>
         <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>AdminRemoveBookServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.AdminRemoveBookServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>AdminRemoveBookServlet</servlet-name>
+        <url-pattern>/admin/removeBook</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>PayOrderServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.PayOrderServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>PayOrderServlet</servlet-name>
+        <url-pattern>/pay-order</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ShipOrderServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.ShipOrderServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>ShipOrderServlet</servlet-name>
+        <url-pattern>/ship-order</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>SellerOrderServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.SellerOrderServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>SellerOrderServlet</servlet-name>
+        <url-pattern>/seller-orders</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>AppealServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.AppealServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>AppealServlet</servlet-name>
+        <url-pattern>/appeal</url-pattern>
     </servlet-mapping>
     
     <!-- Database resource reference -->

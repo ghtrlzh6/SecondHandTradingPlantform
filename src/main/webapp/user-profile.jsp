@@ -360,6 +360,7 @@
             <div class="nav-links">
                 <a href="index.jsp">首页</a>
                 <a href="profile" class="active">我的主页</a>
+                <a href="message-list">消息</a>
                 <a href="books">浏览书籍</a>
                 <a href="addBook">发布书籍</a>
                 <a href="wallet">钱包</a>

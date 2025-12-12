@@ -51,4 +51,12 @@ public interface UserDao {
      * @throws SQLException 数据库访问异常
      */
     void updateUserRating(Long userId, double newRating, int totalRatings) throws SQLException;
+
+    /**
+     * 获取管理员用户
+     *
+     * @return 管理员用户对象，如果没有管理员则返回null
+     * @throws SQLException 数据库访问异常
+     */
+    Optional<User> findAdmin() throws SQLException;
 }
