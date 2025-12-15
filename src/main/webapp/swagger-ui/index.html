@@ -3,64 +3,273 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8">
-    <title>校园书友会 API 文档</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="校园书友会二手书交易平台API文档 - 提供完整的RESTful API接口说明">
+    <meta name="keywords" content="校园书友会,二手书,API文档,Swagger,OpenAPI">
+    <meta name="author" content="校园书友会开发团队">
+    <title>📚 校园书友会 API 文档 v2.0</title>
+    
+    <!-- Swagger UI CSS -->
     <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
     <link rel="stylesheet" type="text/css" href="custom.css" />
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+    
     <style>
-      .custom-navbar {
-        background-color: #343a40;
-        padding: 10px;
+      /* 确保body和html占满整个视口 */
+      html, body {
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #f5f7fa !important;
       }
-      .custom-navbar .navbar-brand {
-        color: white;
-        font-size: 1.2em;
-        font-weight: bold;
+      
+      /* 强制应用背景 */
+      #swagger-ui {
+        background: #f5f7fa !important;
       }
-      .custom-navbar .navbar-link {
-        color: white;
-        text-decoration: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        background-color: #007bff;
-      }
-      .custom-navbar .navbar-link:hover {
-        background-color: #0056b3;
-      }
+      
+      /* 导航栏容器 */
       .navbar-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        max-width: 1200px;
+        max-width: 1460px;
         margin: 0 auto;
+        padding: 0 20px;
       }
-      .navbar-links {
+      
+      /* 增加一个API状态指示器 */
+      .api-status {
         display: flex;
         align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+      }
+      
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4CAF50;
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      /* 添加返回首页按钮图标 */
+      .navbar-link::before {
+        content: "🏠 ";
+        margin-right: 4px;
+      }
+      
+      /* 加载动画 */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      .loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      .loading-content {
+        text-align: center;
+        color: white;
+      }
+      
+      .loader {
+        border: 5px solid rgba(255, 255, 255, 0.3);
+        border-top: 5px solid white;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* 页脚样式 */
+      .api-footer {
+        background: white !important;
+        border-radius: 12px !important;
+        padding: 30px !important;
+        margin: 40px 20px 20px 20px !important;
+        text-align: center !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+        max-width: 1460px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      
+      .api-footer h3 {
+        color: #2c3e50;
+        margin: 0 0 15px 0;
+      }
+      
+      .api-footer p {
+        color: #666;
+        margin: 8px 0;
+      }
+      
+      .api-footer .links {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      
+      .api-footer .links a {
+        color: #667eea;
+        text-decoration: none;
+        padding: 8px 16px;
+        border: 2px solid #667eea;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+      
+      .api-footer .links a:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
       }
     </style>
   </head>
 
   <body>
+    <!-- 加载动画 -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loader"></div>
+        <h2>📚 加载API文档中...</h2>
+        <p>校园书友会 v2.0</p>
+      </div>
+    </div>
+    
     <!-- 导航栏 -->
     <nav class="custom-navbar">
       <div class="navbar-container">
-        <div class="navbar-brand">校园书友会 API 文档</div>
+        <div class="navbar-brand">
+          校园书友会 API 文档 v2.0
+        </div>
         <div class="navbar-links">
-          <a href="../index.jsp" class="navbar-link">回到首页</a>
+          <div class="api-status">
+            <div class="status-indicator"></div>
+            <span>在线</span>
+          </div>
+          <a href="../index.jsp" class="navbar-link">返回首页</a>
         </div>
       </div>
     </nav>
     
+    <!-- Swagger UI 容器 -->
     <div id="swagger-ui"></div>
     
-    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
-    <script src="./swagger-initializer.js" charset="UTF-8"> </script>
+    <!-- 页脚 -->
+    <div class="api-footer">
+      <h3>📖 关于本API</h3>
+      <p>校园书友会二手书交易平台提供完整的RESTful API接口</p>
+      <p>支持书籍管理、用户认证、订单处理、钱包系统和消息通信</p>
+      <div class="links">
+        <a href="../index.jsp" target="_blank">🏠 返回首页</a>
+        <a href="https://github.com" target="_blank">💻 GitHub</a>
+        <a href="mailto:support@bookswap.example.com">📧 技术支持</a>
+      </div>
+      <p style="margin-top: 20px; font-size: 14px; color: #999;">
+        © 2025 校园书友会. All rights reserved. | Powered by Swagger UI
+      </p>
+    </div>
+    
+    <!-- Swagger UI Scripts -->
+    <script src="./swagger-ui-bundle.js" charset="UTF-8"></script>
+    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+    <script src="./swagger-initializer.js" charset="UTF-8"></script>
     
     <script>
-      // 移除了 custom-layout.js 的引用，改为直接在 HTML 中添加导航栏
+      // 隐藏加载动画
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loadingOverlay = document.getElementById('loadingOverlay');
+          if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+            setTimeout(function() {
+              loadingOverlay.remove();
+            }, 500);
+          }
+        }, 800);
+      });
+      
+      // 平滑滚动到顶部
+      function scrollToTop() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+      
+      // 添加滚动到顶部按钮
+      window.addEventListener('scroll', function() {
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        if (!scrollBtn && window.scrollY > 300) {
+          const btn = document.createElement('button');
+          btn.id = 'scrollTopBtn';
+          btn.innerHTML = '⬆️';
+          btn.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 999;
+          `;
+          btn.onmouseover = function() {
+            this.style.transform = 'scale(1.1)';
+          };
+          btn.onmouseout = function() {
+            this.style.transform = 'scale(1)';
+          };
+          btn.onclick = scrollToTop;
+          document.body.appendChild(btn);
+        } else if (scrollBtn && window.scrollY <= 300) {
+          scrollBtn.remove();
+        }
+      });
+      
+      // 控制台输出欢迎信息
+      console.log('%c📚 欢迎使用校园书友会API文档', 'color: #667eea; font-size: 20px; font-weight: bold;');
+      console.log('%c版本: v2.0.0', 'color: #764ba2; font-size: 14px;');
+      console.log('%c如有问题请联系: support@bookswap.example.com', 'color: #666; font-size: 12px;');
     </script>
   </body>
 </html>

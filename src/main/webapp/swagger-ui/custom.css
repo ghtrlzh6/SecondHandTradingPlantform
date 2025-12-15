@@ -1,6 +1,22 @@
-/* 自定义Swagger UI样式 */
+/* 自定义Swagger UI样式 - 白色背景版本 */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  background: #f5f7fa !important;
+  min-height: 100vh !important;
+}
+
+html {
+  background: #f5f7fa !important;
+}
+
 .swagger-ui {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  max-width: 1460px;
+  margin: 0 auto !important;
+  padding: 20px !important;
+  background: #f5f7fa !important;
 }
 
 /* 自定义导航栏 */
@@ -11,92 +27,383 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .navbar-brand {
-  font-size: 1.5em;
+  font-size: 1.8em;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-brand::before {
+  content: "📚";
+  font-size: 1.2em;
 }
 
 .navbar-links {
   display: flex;
   gap: 15px;
+  align-items: center;
 }
 
 .navbar-link {
   color: white;
   text-decoration: none;
-  padding: 8px 15px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 20px;
   transition: all 0.3s ease;
   background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+  border: 2px solid transparent;
 }
 
 .navbar-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+/* 隐藏原生topbar */
 .swagger-ui .topbar {
-  background-color: #2c3e50;
-  padding: 10px 0;
+  display: none;
 }
 
-.swagger-ui .topbar .download-url-wrapper .download-url-button {
-  background-color: #3498db;
+/* 信息区域美化 */
+.swagger-ui .information-container {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 30px !important;
+  margin: 20px 0 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+}
+
+.swagger-ui .info {
+  margin: 0;
 }
 
 .swagger-ui .info .title {
-  color: #2c3e50;
-  font-size: 2em;
-  font-weight: bold;
-  text-align: center;
-  margin: 20px 0;
+  color: #2c3e50 !important;
+  font-size: 2.5em !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin: 0 0 20px 0 !important;
+  background: linear-gradient(45deg, #667eea, #764ba2) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
 }
 
-.swagger-ui .info .description p {
-  font-size: 1.1em;
-  line-height: 1.6;
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto 20px;
+.swagger-ui .info hgroup.main {
+  margin: 0 0 20px 0;
+}
+
+.swagger-ui .info .base-url {
+  display: none;
+}
+
+.swagger-ui .info .description {
+  font-size: 1.05em;
+  line-height: 1.8;
+  color: #555;
+}
+
+.swagger-ui .info .description h2 {
+  color: #2c3e50;
+  font-size: 1.4em;
+  margin-top: 20px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 8px;
+}
+
+.swagger-ui .info .description ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.swagger-ui .info .description li {
+  padding: 8px 0;
+  padding-left: 30px;
+  position: relative;
+}
+
+.swagger-ui .info .description li::before {
+  content: "✓";
+  position: absolute;
+  left: 5px;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+/* 标签区域 */
+.swagger-ui .opblock-tag-section {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin: 20px 0 !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
 }
 
 .swagger-ui .opblock-tag {
-  background: linear-gradient(to right, #ecf0f1, #ffffff);
-  border-radius: 4px;
-  padding: 10px 20px;
-  margin: 10px 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border-left: 4px solid #3498db;
+  background: linear-gradient(to right, #f8f9fa, #ffffff);
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin: 15px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 5px solid #667eea;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .swagger-ui .opblock-tag:hover {
-  background: linear-gradient(to right, #d5dbdb, #f8f9fa);
-  transform: translateX(5px);
-  transition: all 0.3s ease;
+  background: linear-gradient(to right, #e9ecef, #f8f9fa);
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  border-left-width: 8px;
 }
 
+.swagger-ui .opblock-tag-section.is-open .opblock-tag {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* API操作块 */
 .swagger-ui .opblock {
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  margin: 15px 0;
-  border: 1px solid #eee;
-  transition: all 0.3s ease;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08) !important;
+  margin: 20px 0 !important;
+  border: 2px solid #eee !important;
+  transition: all 0.3s ease !important;
+  overflow: hidden !important;
 }
 
 .swagger-ui .opblock:hover {
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   transform: translateY(-3px);
 }
 
 .swagger-ui .opblock.opblock-get {
-  border-color: #3498db;
-  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  border-color: #61affe;
+  background: rgba(97,175,254,.05);
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary {
+  border-color: #61affe;
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background: #61affe;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border-color: #49cc90;
+  background: rgba(73,204,144,.05);
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary {
+  border-color: #49cc90;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background: #49cc90;
+}
+
+.swagger-ui .opblock.opblock-put {
+  border-color: #fca130;
+  background: rgba(252,161,48,.05);
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary {
+  border-color: #fca130;
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary-method {
+  background: #fca130;
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border-color: #f93e3e;
+  background: rgba(249,62,62,.05);
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary {
+  border-color: #f93e3e;
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+  background: #f93e3e;
+}
+
+.swagger-ui .opblock-summary-method {
+  font-weight: 700;
+  min-width: 80px;
+  padding: 10px 15px;
+  text-align: center;
+  border-radius: 6px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+.swagger-ui .opblock-summary-path {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px;
+  color: #3b4151;
+}
+
+/* 参数和响应美化 */
+.swagger-ui .parameters-col_description {
+  width: 50%;
+}
+
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th {
+  font-weight: 700;
+  padding: 12px;
+  font-size: 14px;
+  background: #f7f7f7;
+}
+
+.swagger-ui .parameter__name {
+  font-weight: 700;
+  color: #3b4151;
+}
+
+.swagger-ui .parameter__type {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.swagger-ui .response-col_status {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.swagger-ui .response-col_status .response-undocumented {
+  color: #999;
+}
+
+/* 按钮美化 */
+.swagger-ui .btn {
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.swagger-ui .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.swagger-ui .btn.execute {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+}
+
+.swagger-ui .btn.authorize {
+  background: linear-gradient(45deg, #49cc90, #45b07a);
+  color: white;
+  border-color: #49cc90;
+}
+
+/* 模型美化 */
+.swagger-ui .model {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.swagger-ui .model-title {
+  font-size: 16px;
+  color: #3b4151;
+  font-weight: 600;
+}
+
+/* 响应样式 */
+.swagger-ui .responses-inner {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* 滚动条美化 */
+.swagger-ui ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.swagger-ui ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #764ba2, #667eea);
+}
+
+/* 搜索/过滤框美化 */
+.swagger-ui .filter-container {
+  margin: 20px 0;
+}
+
+.swagger-ui .filter .operation-filter-input {
+  border: 2px solid #667eea;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.1);
+}
+
+.swagger-ui .filter .operation-filter-input:focus {
+  outline: none;
+  border-color: #764ba2;
+  box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+  transform: scale(1.02);
+}
+
+/* Scheme容器美化 */
+.swagger-ui .scheme-container {
+  background: white !important;
+  border-radius: 8px !important;
+  padding: 15px !important;
+  margin: 20px 0 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* 授权按钮美化 */
+.swagger-ui .authorization__btn {
+  border-radius: 6px;
+  padding: 8px 16px;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+  .navbar-brand {
+    font-size: 1.3em;
+  }
+  
+  .swagger-ui .info .title {
+    font-size: 2em;
+  }
+  
+  .swagger-ui .opblock-summary-path {
+    font-size: 14px;
+  }
 }
 
 .swagger-ui .opblock.opblock-post {

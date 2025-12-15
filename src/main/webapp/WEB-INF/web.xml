@@ -109,6 +109,26 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>UserApiServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.UserApiServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>UserApiServlet</servlet-name>
+        <url-pattern>/api/users</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>OrderApiServlet</servlet-name>
+        <servlet-class>com.example.demo.servlet.OrderApiServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>OrderApiServlet</servlet-name>
+        <url-pattern>/api/orders</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.example.demo.servlet.LogoutServlet</servlet-class>
     </servlet>

@@ -1,14 +1,18 @@
 package com.example.demo.dao.impl;
 
-import com.example.demo.dao.BookDao;
-import com.example.demo.model.Book;
-
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.sql.DataSource;
+
+import com.example.demo.dao.BookDao;
+import com.example.demo.model.Book;
 
 public class BookDaoImpl implements BookDao {
     private final DataSource dataSource;
@@ -77,7 +81,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public List<Book> findAll(int offset, int limit) throws SQLException {
-        String sql = "SELECT id, title, author, price, description, image_url, seller_id, created_at FROM books WHERE status = 'available' ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        String sql = "SELECT id, title, author, price, description, image_url, seller_id, status, created_at FROM books WHERE status = 'available' ORDER BY created_at DESC LIMIT ? OFFSET ?";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -96,6 +100,7 @@ public class BookDaoImpl implements BookDao {
                     book.setDescription(rs.getString("description"));
                     book.setImageUrl(rs.getString("image_url"));
                     book.setSellerId(rs.getLong("seller_id"));
+                    book.setStatus(rs.getString("status"));
                     book.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     books.add(book);
                 }

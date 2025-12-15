@@ -1,0 +1,950 @@
+openapi: 3.0.3
+info:
+  title: Campus BookSwap API
+  description: |
+    校园二手书交易平台API v2.0
+    
+    这是一个为校园用户提供二手书交易服务的平台。
+    用户可以浏览、搜索、发布和购买二手书籍。
+    
+    ## 主要特性
+    - 📚 完整的书籍管理（CRUD）
+    - 👤 用户注册和认证
+    - 🛒 订单管理（创建、支付、发货、收货）
+    - 💰 钱包系统集成
+    - 💬 消息和申诉系统
+    - 🔍 搜索和分页
+    - 🛡️ 权限控制
+    
+    ## 认证说明
+    API使用基于Session的认证机制。需要登录的接口需要先通过登录接口获取Session。
+  version: 2.0.0
+  contact:
+    name: API Support
+    email: support@bookswap.example.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8080/api
+    description: 本地开发服务器
+  - url: https://api.bookswap.example.com
+    description: 生产环境服务器
+
+tags:
+  - name: books
+    description: 书籍相关操作
+  - name: users
+    description: 用户相关操作
+  - name: orders
+    description: 订单相关操作
+  - name: auth
+    description: 认证相关操作
+
+paths:
+  /books:
+    get:
+      tags:
+        - books
+      summary: 获取书籍列表
+      description: 返回平台上的书籍列表，支持分页和搜索
+      parameters:
+        - name: page
+          in: query
+          description: 页码，从1开始
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: size
+          in: query
+          description: 每页条数，最大100
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: keyword
+          in: query
+          description: 搜索关键词（书名、作者）
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回书籍列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "操作成功"
+                code: 200
+                timestamp: "2025-12-12T12:00:00Z"
+                data:
+                  content:
+                    - id: 1
+                      title: "Java核心技术"
+                      author: "Cay S. Horstmann"
+                      price: 89.00
+                      description: "经典Java教材"
+                      imageUrl: "https://example.com/java-core.jpg"
+                      sellerId: 1
+                      status: "available"
+                      createdAt: "2025-12-12T10:00:00Z"
+                  currentPage: 1
+                  pageSize: 10
+                  totalElements: 25
+                  totalPages: 3
+                  first: true
+                  last: false
+                  hasNext: true
+                  hasPrevious: false
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    post:
+      tags:
+        - books
+      summary: 创建新书籍
+      description: 添加一本新书籍到平台，需要用户登录
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreateRequest'
+            example:
+              title: "Java核心技术"
+              author: "Cay S. Horstmann"
+              price: 89.00
+              description: "经典Java教材，适合初学者"
+              imageUrl: "https://example.com/java-core.jpg"
+      responses:
+        '201':
+          description: 书籍创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /books/{id}:
+    get:
+      tags:
+        - books
+      summary: 获取书籍详情
+      description: 根据书籍ID获取特定书籍的详细信息
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 书籍ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功返回书籍详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: 书籍未找到
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      tags:
+        - books
+      summary: 更新书籍信息
+      description: 更新指定书籍的信息，只有书籍所有者或管理员可以操作
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 书籍ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreateRequest'
+      responses:
+        '200':
+          description: 书籍更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 书籍未找到
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      tags:
+        - books
+      summary: 删除书籍
+      description: 删除指定ID的书籍，只有书籍所有者或管理员可以操作
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 书籍ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 书籍删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 书籍未找到
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/register:
+    post:
+      tags:
+        - auth
+      summary: 用户注册
+      description: 注册一个新用户账号
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - email
+              properties:
+                username:
+                  type: string
+                  description: 用户名（3-20位字母数字下划线）
+                  example: "alice"
+                password:
+                  type: string
+                  format: password
+                  description: 密码（至少6位）
+                  example: "password123"
+                email:
+                  type: string
+                  format: email
+                  description: 邮箱地址
+                  example: "alice@example.com"
+      responses:
+        '201':
+          description: 用户注册成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 用户名或邮箱已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/login:
+    post:
+      tags:
+        - auth
+      summary: 用户登录
+      description: 用户登录系统，建立会话
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: 用户名
+                  example: "alice"
+                password:
+                  type: string
+                  format: password
+                  description: 密码
+                  example: "password123"
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 用户名或密码错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/profile:
+    get:
+      tags:
+        - users
+      summary: 获取当前用户信息
+      description: 获取当前登录用户的详细信息
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: 成功返回用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary: 获取指定用户信息
+      description: 根据用户ID获取用户信息，仅管理员可访问
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 用户ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功返回用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 需要管理员权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders:
+    get:
+      tags:
+        - orders
+      summary: 获取订单列表
+      description: 获取当前用户的订单列表，支持按类型筛选
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: 页码，从1开始
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: size
+          in: query
+          description: 每页条数，最大100
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: type
+          in: query
+          description: 订单类型：buyer（作为买家）、seller（作为卖家）、all（所有，仅管理员）
+          schema:
+            type: string
+            enum: [buyer, seller, all]
+            default: buyer
+      responses:
+        '200':
+          description: 成功返回订单列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    post:
+      tags:
+        - orders
+      summary: 创建新订单
+      description: 创建新的购买订单
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - bookId
+                - shippingAddress
+              properties:
+                bookId:
+                  type: integer
+                  format: int64
+                  description: 要购买的书籍ID
+                  example: 1
+                shippingAddress:
+                  type: string
+                  description: 配送地址
+                  example: "北京市海淀区清华园1号"
+      responses:
+        '201':
+          description: 订单创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}:
+    get:
+      tags:
+        - orders
+      summary: 获取订单详情
+      description: 获取指定订单的详细信息
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 订单ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功返回订单详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限查看此订单
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 订单不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}/pay:
+    put:
+      tags:
+        - orders
+      summary: 支付订单
+      description: 支付指定订单，需要支付密码
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 订单ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - paymentPassword
+              properties:
+                paymentPassword:
+                  type: string
+                  format: password
+                  description: 支付密码
+                  example: "pay123"
+      responses:
+        '200':
+          description: 订单支付成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 请求参数错误或余额不足
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}/ship:
+    put:
+      tags:
+        - orders
+      summary: 订单发货
+      description: 卖家对订单进行发货操作
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 订单ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 订单发货成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 订单状态不允许发货
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}/confirm:
+    put:
+      tags:
+        - orders
+      summary: 确认收货
+      description: 买家确认收到货物
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 订单ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 确认收货成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 订单状态不允许确认收货
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+      description: 基于Session的认证，需要先调用登录接口
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 操作是否成功
+          example: true
+        message:
+          type: string
+          description: 响应消息
+          example: "操作成功"
+        data:
+          type: object
+          description: 响应数据
+        code:
+          type: integer
+          description: HTTP状态码
+          example: 200
+        timestamp:
+          type: string
+          format: date-time
+          description: 响应时间戳
+          example: "2025-12-12T12:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          description: 错误信息
+          example: "请求参数错误"
+        code:
+          type: integer
+          description: 错误代码
+          example: 400
+        timestamp:
+          type: string
+          format: date-time
+          description: 响应时间戳
+          example: "2025-12-12T12:00:00Z"
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 书籍ID
+          example: 1
+        title:
+          type: string
+          description: 书名
+          example: "Java核心技术"
+        author:
+          type: string
+          description: 作者
+          example: "Cay S. Horstmann"
+        price:
+          type: number
+          format: float
+          description: 价格
+          example: 89.00
+        description:
+          type: string
+          description: 描述
+          example: "《Java核心技术》是Java领域极具影响力和口碑的著作"
+        imageUrl:
+          type: string
+          description: 图片URL
+          example: "https://example.com/book-cover.jpg"
+        sellerId:
+          type: integer
+          format: int64
+          description: 卖家ID
+          example: 1
+        status:
+          type: string
+          enum: [available, sold, reserved, removed]
+          description: 书籍状态
+          example: "available"
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+          example: "2025-12-12T10:00:00Z"
+      required:
+        - id
+        - title
+        - author
+        - price
+        - sellerId
+        - status
+        - createdAt
+
+    BookCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 书名（1-200字符）
+          example: "Java核心技术"
+        author:
+          type: string
+          description: 作者（1-100字符）
+          example: "Cay S. Horstmann"
+        price:
+          type: number
+          format: float
+          description: 价格（大于0，不超过999999.99）
+          example: 89.00
+        description:
+          type: string
+          description: 描述（可选）
+          example: "《Java核心技术》是Java领域极具影响力和口碑的著作"
+        imageUrl:
+          type: string
+          description: 图片URL（可选）
+          example: "https://example.com/book-cover.jpg"
+      required:
+        - title
+        - author
+        - price
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 用户ID
+          example: 1
+        username:
+          type: string
+          description: 用户名
+          example: "alice"
+        email:
+          type: string
+          format: email
+          description: 邮箱
+          example: "alice@example.com"
+        rating:
+          type: number
+          format: float
+          description: 用户评分（1.0-5.0）
+          example: 4.5
+        totalRatings:
+          type: integer
+          description: 总评分次数
+          example: 12
+        role:
+          type: string
+          enum: [user, admin]
+          description: 用户角色
+          example: "user"
+        createdAt:
+          type: string
+          format: date-time
+          description: 注册时间
+          example: "2025-12-12T10:00:00Z"
+      required:
+        - id
+        - username
+        - email
+        - role
+        - createdAt
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 订单ID
+          example: 1
+        bookId:
+          type: integer
+          format: int64
+          description: 书籍ID
+          example: 1
+        buyerId:
+          type: integer
+          format: int64
+          description: 买家ID
+          example: 2
+        sellerId:
+          type: integer
+          format: int64
+          description: 卖家ID
+          example: 1
+        shippingAddress:
+          type: string
+          description: 配送地址
+          example: "北京市海淀区清华园1号"
+        status:
+          type: string
+          enum: [pending, paid, shipped, completed, cancelled]
+          description: 订单状态
+          example: "pending"
+        orderedAt:
+          type: string
+          format: date-time
+          description: 下单时间
+          example: "2025-12-12T10:00:00Z"
+      required:
+        - id
+        - bookId
+        - buyerId
+        - sellerId
+        - status
+        - orderedAt
+
+    PaginatedResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+          description: 数据列表
+        currentPage:
+          type: integer
+          description: 当前页码
+          example: 1
+        pageSize:
+          type: integer
+          description: 每页条数
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          description: 总记录数
+          example: 25
+        totalPages:
+          type: integer
+          description: 总页数
+          example: 3
+        first:
+          type: boolean
+          description: 是否为第一页
+          example: true
+        last:
+          type: boolean
+          description: 是否为最后一页
+          example: false
+        hasNext:
+          type: boolean
+          description: 是否有下一页
+          example: true
+        hasPrevious:
+          type: boolean
+          description: 是否有上一页
+          example: false
